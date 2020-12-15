@@ -7,6 +7,7 @@ VM_ROOTFS_DEV=/dev/loop
 VM_ROOTFS_DIR=rootfs
 VM_SWAPFILE_PATH=/swapfile
 VM_ROOTFS_UUID="$(uuid -v 4)"
+VM_TEMP_VOLUME_DIR="temp-volume"
 
 # Set root password
 echo 'root:password' | chroot "$VM_ROOTFS_DIR" chpasswd
@@ -32,6 +33,11 @@ auto enp0s1
 iface enp0s1 inet dhcp
 iface enp0s1 inet6 auto
 EOF
+
+# Install kernel package
+cp "$VM_TEMP_VOLUME_DIR"/linux-image-*.deb "$VM_ROOTFS_DIR/linux-image.deb"
+chroot "$VM_ROOTFS_DIR" dpkg -i /linux-image.deb
+rm "$VM_ROOTFS_DIR/linux-image.deb"
 
 # Create filesystem image
 mkfs.ext4 -d "$VM_ROOTFS_DIR" -U "$VM_ROOTFS_UUID" "$VM_ROOTFS_DEV"

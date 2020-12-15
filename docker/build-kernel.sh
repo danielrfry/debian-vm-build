@@ -5,9 +5,10 @@ set -e
 VM_LINUX_SRC_ARCHIVE=/usr/src/linux-source-*.tar.xz
 VM_BUILD_DIR="linux-build"
 VM_OUTPUT_DIR="output"
-VM_KERNEL_OUTPUT_DIR="$VM_OUTPUT_DIR/kernel"
-VM_INITRD_OUTPUT_DIR="$VM_OUTPUT_DIR/initrd"
+VM_KERNEL_OUTPUT_DIR="$VM_OUTPUT_DIR"
+VM_INITRD_OUTPUT_DIR="$VM_OUTPUT_DIR"
 VM_DEB_OUTPUT_DIR="$VM_OUTPUT_DIR/deb"
+VM_TEMP_VOLUME_DIR="temp-volume"
 VM_ARCH="$(uname -m)"
 
 if [[ "$VM_ARCH" == "aarch64" ]]; then
@@ -69,3 +70,5 @@ cp /boot/initrd.img-* $VM_INITRD_OUTPUT_DIR/
 
 mkdir -p $VM_DEB_OUTPUT_DIR
 cp $VM_BUILD_DIR/*.deb $VM_DEB_OUTPUT_DIR/
+
+cp $VM_BUILD_DIR/linux-image-*.deb $VM_TEMP_VOLUME_DIR/
