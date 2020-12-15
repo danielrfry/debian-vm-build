@@ -12,7 +12,7 @@ VM_ARCH="$(uname -m)"
 
 if [[ "$VM_ARCH" == "aarch64" ]]; then
     VM_CONFIG_PATH=/usr/src/linux-config-*/config.arm64_none_arm64.xz
-elif [[ "$VM_ARCH" == "amd64" ]]; then
+elif [[ "$VM_ARCH" == "x86_64" ]]; then
     VM_CONFIG_PATH=/usr/src/linux-config-*/config.amd64_none_amd64.xz
 else
     echo "Unsupported architecture: $VM_ARCH" >&2
@@ -48,15 +48,21 @@ make -j `nproc` deb-pkg
 
 popd
 
+echo 'RESUME=none' > /etc/initramfs-tools/conf.d/resume
+
 log_step "Installing kernel package"
 dpkg -i $VM_BUILD_DIR/linux-image-*.deb
 
 log_step "Copying build output to host"
 mkdir -p $VM_KERNEL_OUTPUT_DIR
 VM_KERNEL_IMAGE_SRC_PATH=/boot/vmlinuz-*
-VM_KERNEL_IMAGE_NAME="$(basename $VM_KERNEL_IMAGE_SRC_PATH)"
-VM_KERNEL_IMAGE_DEST_PATH=$VM_KERNEL_OUTPUT_DIR/vmlinux-${VM_KERNEL_IMAGE_NAME#vmlinuz-}
-gunzip < $VM_KERNEL_IMAGE_SRC_PATH > "$VM_KERNEL_IMAGE_DEST_PATH"
+if [[ "$VM_ARCH" == "aarch64" ]]; then
+    VM_KERNEL_IMAGE_NAME=$(basename $VM_KERNEL_IMAGE_SRC_PATH)
+    VM_KERNEL_IMAGE_DEST_PATH=$VM_KERNEL_OUTPUT_DIR/$VM_KERNEL_IMAGE_NAME
+    gunzip < $VM_KERNEL_IMAGE_SRC_PATH > $VM_KERNEL_IMAGE_DEST_PATH
+else
+    cp $VM_KERNEL_IMAGE_SRC_PATH $VM_KERNEL_OUTPUT_DIR/
+fi
 
 mkdir -p $VM_INITRD_OUTPUT_DIR
 cp /boot/initrd.img-* $VM_INITRD_OUTPUT_DIR/

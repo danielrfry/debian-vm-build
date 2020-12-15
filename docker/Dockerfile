@@ -4,7 +4,7 @@ RUN apt-get update && apt-get upgrade -y
 
 FROM debian-vm-build-base AS debian-vm-build-kernel
 WORKDIR /root
-RUN apt-get install -y build-essential linux-source kmod cpio initramfs-tools fakeroot libssl-dev lsb-release openssl
+RUN apt-get install -y build-essential linux-source kmod cpio initramfs-tools fakeroot libssl-dev lsb-release openssl libelf-dev
 COPY build-kernel.sh ./
 CMD ./build-kernel.sh
 
