@@ -11,7 +11,7 @@ VM_DOCKER_TAG_BUILD_KERNEL="debian-vm-build-kernel"
 VM_DOCKER_TAG_BUILD_ROOTFS="debian-vm-build-rootfs"
 
 function log_stage () {
-    echo "$(tput setaf 4; tput bold)$@$(tput sgr0)"
+    echo "$(tput setaf 2; tput bold)$@$(tput sgr0)"
 }
 
 function build_kernel () {

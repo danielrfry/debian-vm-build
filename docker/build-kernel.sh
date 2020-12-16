@@ -21,7 +21,7 @@ else
 fi
 
 function log_step () {
-    echo "$(tput setaf 4)$@$(tput sgr0)"
+    echo "$(tput setaf 2)$@$(tput sgr0)"
 }
 
 mkdir -p $VM_BUILD_DIR
