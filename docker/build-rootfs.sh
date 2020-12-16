@@ -8,6 +8,7 @@ VM_ROOTFS_DIR=rootfs
 VM_SWAPFILE_PATH=/swapfile
 VM_ROOTFS_UUID="$(uuid -v 4)"
 VM_TEMP_VOLUME_DIR="temp-volume"
+VM_DEFAULT_HOSTNAME="debian-vm-${VM_ARCH//_/-}"
 
 # Set root password
 echo 'root:password' | chroot "$VM_ROOTFS_DIR" chpasswd
@@ -18,7 +19,7 @@ UUID=$VM_ROOTFS_UUID / ext4 errors=remount-ro 0 1
 EOF
 
 # Set hostname
-echo "debian-vm-$VM_ARCH" > "$VM_ROOTFS_DIR/etc/hostname"
+echo "$VM_DEFAULT_HOSTNAME" > "$VM_ROOTFS_DIR/etc/hostname"
 
 # Add apt sources
 cat > "$VM_ROOTFS_DIR/etc/apt/sources.list" <<EOF
