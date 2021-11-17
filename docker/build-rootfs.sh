@@ -23,9 +23,9 @@ echo "$VM_DEFAULT_HOSTNAME" > "$VM_ROOTFS_DIR/etc/hostname"
 
 # Add apt sources
 cat > "$VM_ROOTFS_DIR/etc/apt/sources.list" <<EOF
-deb http://deb.debian.org/debian buster main
-deb http://deb.debian.org/debian-security/ buster/updates main
-deb http://deb.debian.org/debian buster-updates main
+deb http://deb.debian.org/debian bullseye main
+deb http://deb.debian.org/debian-security/ bullseye/updates main
+deb http://deb.debian.org/debian bullseye-updates main
 EOF
 
 # Set up networking
