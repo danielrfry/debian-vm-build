@@ -6,7 +6,7 @@ It is intended for use with [toyvm](https://github.com/danielrfry/toyvm) on Appl
 Pre-built binaries for Apple Silicon (and other `aarch64` platforms), created using these scripts, are available at [debian-vm-aarch64](https://github.com/danielrfry/debian-vm-aarch64).
 
 ## Building
-An existing Linux installation of the same architecture as the target is required. For Apple Silicon, this can be a Raspberry Pi 4 running the beta 64-bit version of [Raspberry Pi OS](https://www.raspberrypi.org/forums/viewtopic.php?t=275370).
+An existing Linux installation of the same architecture as the target is required. For Apple Silicon, this can be a Raspberry Pi 4 running the **64-bit version** of [Raspberry Pi OS](https://www.raspberrypi.com/software/operating-systems/).
 
 [Docker](https://www.docker.com) is used to create a consistent build environment. On a Debian-based distribution such as Raspberry Pi OS, install Docker with:
 
