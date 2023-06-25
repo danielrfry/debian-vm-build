@@ -35,6 +35,9 @@ cd linux-source-*
 xz -d < $VM_CONFIG_PATH > .config
 scripts/config \
     -d CONFIG_DEBUG_INFO \
+    -d CONFIG_DEBUG_INFO_BTF \
+    -d CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT \
+    -e CONFIG_DEBUG_INFO_NONE \
     -e CONFIG_VIRTIO \
     -e CONFIG_VIRTIO_PCI \
     -e CONFIG_VIRTIO_CONSOLE \
