@@ -8,7 +8,6 @@ VM_OUTPUT_DIR="output"
 VM_KERNEL_OUTPUT_DIR="$VM_OUTPUT_DIR"
 VM_INITRD_OUTPUT_DIR="$VM_OUTPUT_DIR"
 VM_DEB_OUTPUT_DIR="$VM_OUTPUT_DIR/deb"
-VM_TEMP_VOLUME_DIR="temp-volume"
 VM_ARCH="$(uname -m)"
 
 if [[ "$VM_ARCH" == "aarch64" ]]; then
@@ -48,7 +47,7 @@ scripts/config \
     -e CONFIG_MODULE_SIG_ALL \
     --set-str CONFIG_MODULE_SIG_KEY 'certs/signing_key.pem' \
     --set-str CONFIG_SYSTEM_TRUSTED_KEYS ''
-make -j `nproc` deb-pkg
+make -j `nproc` bindeb-pkg
 
 popd
 
@@ -73,5 +72,3 @@ cp /boot/initrd.img-* $VM_INITRD_OUTPUT_DIR/
 
 mkdir -p $VM_DEB_OUTPUT_DIR
 cp $VM_BUILD_DIR/*.deb $VM_DEB_OUTPUT_DIR/
-
-cp $VM_BUILD_DIR/linux-image-*.deb $VM_TEMP_VOLUME_DIR/

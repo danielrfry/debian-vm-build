@@ -7,8 +7,7 @@ VM_OUTPUT_DIR="$(pwd)/output"
 VM_ROOTFS_OUTPUT_DIR="$VM_OUTPUT_DIR"
 VM_ROOTFS_IMAGE_PATH="$VM_ROOTFS_OUTPUT_DIR/debian-rootfs-$VM_ARCH.img"
 VM_ROOTFS_IMAGE_SIZE_GB=10
-VM_DOCKER_TAG_BUILD_KERNEL="debian-vm-build-kernel"
-VM_DOCKER_TAG_BUILD_ROOTFS="debian-vm-build-rootfs"
+VM_DOCKER_TAG="debian-vm-build"
 
 function log_stage () {
     echo "$(tput setaf 2; tput bold)$@$(tput sgr0)"
@@ -16,11 +15,11 @@ function log_stage () {
 
 function build_kernel () {
     log_stage "Preparing kernel build environment"
-    docker build --target debian-vm-build-kernel -t "$VM_DOCKER_TAG_BUILD_KERNEL" docker
+    docker build -t "$VM_DOCKER_TAG" docker
 
     log_stage "Building kernel"
     mkdir -p "$VM_OUTPUT_DIR"
-    docker run --rm -it -v "$VM_OUTPUT_DIR":/root/output --mount source="$VM_TEMP_VOLUME",destination=/root/temp-volume "$VM_DOCKER_TAG_BUILD_KERNEL"
+    docker run --rm -it -v "$VM_OUTPUT_DIR":/root/output "$VM_DOCKER_TAG" ./build-kernel.sh
 }
 
 function build_rootfs() {
@@ -41,8 +40,8 @@ function build_rootfs() {
     docker run --rm -it --device="$VM_ROOTFS_PARTITION_DEV:/dev/loop" --mount source="$VM_TEMP_VOLUME",destination=/root/temp-volume "$VM_DOCKER_TAG_BUILD_ROOTFS"
 }
 
-VM_TEMP_VOLUME="$(docker volume create)"
-trap "docker volume rm $VM_TEMP_VOLUME" EXIT
+# VM_TEMP_VOLUME="$(docker volume create)"
+# trap "docker volume rm $VM_TEMP_VOLUME" EXIT
 
 build_kernel
-build_rootfs
+# build_rootfs
