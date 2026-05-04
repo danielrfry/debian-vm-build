@@ -16,13 +16,13 @@ function log_stage () {
 function build_kernel () {
     log_stage "Building kernel"
     mkdir -p "$VM_OUTPUT_DIR"
-    docker run --rm -it -v "$VM_OUTPUT_DIR":/output "$VM_DOCKER_TAG" ./build-kernel.sh
+    docker run --rm -i -v "$VM_OUTPUT_DIR":/output "$VM_DOCKER_TAG" ./build-kernel.sh
 }
 
 function build_rootfs() {
     log_stage "Building root filesystem"
     mkdir -p "$VM_OUTPUT_DIR"
-    docker run --rm -it --privileged -v "$VM_OUTPUT_DIR":/output "$VM_DOCKER_TAG" ./build-rootfs.sh
+    docker run --rm -i --privileged -v "$VM_OUTPUT_DIR":/output "$VM_DOCKER_TAG" ./build-rootfs.sh
 }
 
 docker build -t "$VM_DOCKER_TAG" docker
