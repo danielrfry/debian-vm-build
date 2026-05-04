@@ -1,10 +1,10 @@
 #! /bin/bash
 
-set -e
+set -eux
+
+source "$(dirname "$0")/common.inc.sh"
 
 VM_LINUX_SRC_ARCHIVE=/usr/src/linux-source-*.tar.xz
-VM_BUILD_DIR="linux-build"
-VM_OUTPUT_DIR="output"
 VM_KERNEL_OUTPUT_DIR="$VM_OUTPUT_DIR"
 VM_INITRD_OUTPUT_DIR="$VM_OUTPUT_DIR"
 VM_DEB_OUTPUT_DIR="$VM_OUTPUT_DIR/deb"
@@ -19,17 +19,13 @@ else
     exit 1
 fi
 
-function log_step () {
-    echo "$(tput setaf 2)$@$(tput sgr0)"
-}
-
 mkdir -p $VM_BUILD_DIR
 pushd $VM_BUILD_DIR
 
-log_step "Unpacking kernel source code"
+log_stage "Unpacking kernel source code"
 tar -xJf $VM_LINUX_SRC_ARCHIVE
 
-log_step "Building kernel"
+log_stage "Building kernel"
 cd linux-source-*
 xz -d < $VM_CONFIG_PATH > .config
 scripts/config \
@@ -53,10 +49,10 @@ popd
 
 echo 'RESUME=none' > /etc/initramfs-tools/conf.d/resume
 
-log_step "Installing kernel package"
+log_stage "Installing kernel package"
 dpkg -i $VM_BUILD_DIR/linux-image-*.deb
 
-log_step "Copying build output to host"
+log_stage "Copying build output to host"
 mkdir -p $VM_KERNEL_OUTPUT_DIR
 VM_KERNEL_IMAGE_SRC_PATH=/boot/vmlinuz-*
 if [[ "$VM_ARCH" == "aarch64" ]]; then
