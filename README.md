@@ -6,7 +6,7 @@ It is intended for use with [toyvm](https://github.com/danielrfry/toyvm) on Appl
 See [Releases](https://github.com/danielrfry/debian-vm-build/releases) for pre-built binaries for Apple Silicon (and other `aarch64` platforms), created using these scripts.
 
 ## Building
-An existing Linux installation of the same architecture as the target is required. For Apple Silicon, this can be a Raspberry Pi 4 running the **64-bit version** of [Raspberry Pi OS](https://www.raspberrypi.com/software/operating-systems/).
+An existing Linux installation of the same architecture as the target is required. For Apple Silicon, this can be a Raspberry Pi 4 or later running the **64-bit version** of [Raspberry Pi OS](https://www.raspberrypi.com/software/operating-systems/).
 
 [Docker](https://www.docker.com) is used to create a consistent build environment. On a Debian-based distribution such as Raspberry Pi OS, install Docker with:
 
@@ -20,20 +20,10 @@ Start the build with:
 sudo ./build.sh
 ```
 
-(Root privileges are required to set up a loopback device for populating the disk image, and to issue Docker commands by default).
+(Root privileges are required to issue Docker commands by default).
 
-⚠ **This script tags the Docker images it creates with the names `debian-vm-build-kernel` and `debian-vm-build-rootfs`, overwriting any existing tags with these names.**
-
-### Build times
-The table below shows the approximate time taken for a complete build on the systems I've tested with:
-
-|Time               |System                                                       |
-|-------------------|-------------------------------------------------------------|
-|24 minutes         |Mac mini 2020 (M1), Debian in toyvm, 8GB RAM, 8 CPU cores    |
-|47 minutes         |MacBook Pro 2018 (2.3GHz quad core i5), Debian in toyvm, 8GB RAM, 8 CPU cores/threads|
-|2 hours, 33 minutes|Raspberry Pi 4B, Raspberry Pi OS 64-bit, 4GB RAM, 4 CPU cores|
-
-This includes the time taken to download Docker images and Debian packages.
+> [!WARNING]
+> This script tags the Docker image it creates with the name `debian-vm-build`, overwriting any existing tag with this name.
 
 ## Output
 Build products are placed in the `output` subdirectory of the current working directory. The output consists of the following files:
@@ -47,7 +37,9 @@ Build products are placed in the `output` subdirectory of the current working di
 * `vmlinuz-<version>` - kernel image
 
 ## Configuration
-🔑 **The initial root password is `password`.**
+
+> [!NOTE]
+> 🔑 The initial root password is `password` - don't forget to change it.
 
 The kernel is built with the standard Debian configuration, adjusted to add built-in support for virtio devices (the drivers are normally built as modules).
 
@@ -55,17 +47,15 @@ The root filesystem is generated using `debootstrap`, and as such contains only 
 
 There is no swap configured.
 
-Apple's Virtualization.framework (and therefore toyvm) supports only raw disk image files. To keep disk usage to a minimum, the root filesystem disk image is written to a [sparse file](https://en.wikipedia.org/wiki/Sparse_file).
+To keep disk usage to a minimum, the root filesystem disk image is written to a [sparse file](https://en.wikipedia.org/wiki/Sparse_file).
 
 ## Booting in toyvm
 ```
-tar xvjf debian-vm-aarch64_*.tar.bz2
-toyvm -k vmlinuz-* -i initrd.img-* -d debian-rootfs-aarch64.img 'console=hvc0 root=/dev/vda1 nosplash'
+tar xvJf debian-vm-aarch64_*.tar.xz
+toyvm -k vmlinuz-* -i initrd.img-* -d debian-rootfs-aarch64.img 'console=hvc0 root=/dev/vda1 rw'
 ```
 
-## Hints
-
-### Enlarging the root filesystem
+## Enlarging the root filesystem
 With the VM stopped, first increase the size of the disk image file (20GB in this example):
 
 ```
@@ -97,17 +87,4 @@ Finally, resize the filesystem:
 
 ```
 # resize2fs /dev/vda1
-```
-
-### Snapshots
-APFS supports file cloning, which is useful for creating disk image 'snapshots'. Unchanged blocks are shared between clones, making efficient use of storage.
-
-```
-$ df -h .
-Filesystem     Size   Used  Avail Capacity iused      ifree %iused  Mounted on
-/dev/disk3s5  460Gi  148Gi  293Gi    34% 1095372 4826881148    0%   /System/Volumes/Data
-$ cp -c debian-rootfs-aarch64.img debian-rootfs-aarch64-snapshot.img
-$ df -h .
-Filesystem     Size   Used  Avail Capacity iused      ifree %iused  Mounted on
-/dev/disk3s5  460Gi  148Gi  293Gi    34% 1095373 4826881147    0%   /System/Volumes/Data
 ```
