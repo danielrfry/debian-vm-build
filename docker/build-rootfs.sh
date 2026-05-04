@@ -61,7 +61,7 @@ parted -s "$VM_ROOTFS_IMAGE_PATH" \
     mklabel gpt \
     mkpart primary ext4 '0%' '100%'
 
-VM_ROOTFS_DEV="$(losetup -P -f --show "$VM_ROOTFS_IMAGE_PATH")"
+VM_ROOTFS_DEV="$(retry_command 5 2 losetup -P -f --show "$VM_ROOTFS_IMAGE_PATH")"
 VM_ROOTFS_PARTITION_DEV="${VM_ROOTFS_DEV}p1"
 trap "losetup -d $VM_ROOTFS_DEV" EXIT
 
